@@ -209,7 +209,7 @@ struct MatchTabView: View {
     // Carte du match en avant — se replie quand on scrolle la liste
     private func featured(_ g: WCGame) -> some View {
         ZStack {
-            featuredFull(g).opacity(1 - min(collapse * 1.6, 1))
+            featuredFull(g).opacity(1 - min(Double(collapse) * 1.6, 1))
             featuredMini(g).opacity(collapse)
         }
         .frame(maxWidth: .infinity)
