@@ -1,0 +1,24 @@
+# SwiftPM build output
+.build/
+.swiftpm/
+
+# Xcode
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# JetBrains IDEs
+.idea/
+
+# macOS
+.DS_Store
+._*
+
+# iconset généré (reconstruire avec Logo/make-icon.swift)
+*.iconset/
+
+# Built app bundle
+*.app/
+
+# Logs
+*.log
