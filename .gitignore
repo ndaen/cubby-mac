@@ -17,8 +17,9 @@ xcuserdata/
 # iconset généré (reconstruire avec Logo/make-icon.swift)
 *.iconset/
 
-# Built app bundle
+# Build/packaging output
 *.app/
+dist/
 
 # Logs
 *.log

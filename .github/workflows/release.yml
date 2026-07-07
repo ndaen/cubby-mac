@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, e.g. 0.2.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use newest installed Xcode (Swift 6 toolchain)
+        run: |
+          XC="$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1 || true)"
+          [ -n "$XC" ] && sudo xcode-select -s "$XC"
+          swift --version
+
+      - name: Resolve version
+        id: v
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            V="${{ github.event.inputs.version }}"
+          else
+            V="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+
+      - name: Build app + DMG
+        run: bash package.sh "${{ steps.v.outputs.version }}"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="${{ steps.v.outputs.version }}"
+          DMG="dist/Cubby-$V.dmg"
+          if gh release view "v$V" >/dev/null 2>&1; then
+            gh release upload "v$V" "$DMG" --clobber
+          else
+            gh release create "v$V" --title "Cubby $V" \
+              --notes "Automated release. Open the DMG and drag Cubby into Applications. Cubby is ad-hoc signed (not notarized) — on first launch right-click Cubby.app › Open › Open. Requires macOS 14+." \
+              "$DMG"
+          fi
