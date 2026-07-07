@@ -32,7 +32,7 @@ Cubby is an **agent app**: no Dock icon, it lives in the menu bar (a small face)
 
 ### Gatekeeper
 
-The app is **ad-hoc signed, not notarized**. On first launch macOS may refuse to open it. Right-click `Cubby.app` → **Open** → **Open**, or run:
+Cubby is **ad-hoc signed and not notarized**, so macOS blocks it on first launch (*"Apple could not verify…"*). To open it: drag Cubby into **Applications**, then open **System Settings › Privacy & Security**, scroll to the bottom and click **Open Anyway** next to the Cubby message. *(On macOS 14 you can instead right-click `Cubby.app` › **Open**.)* Or from Terminal:
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Cubby.app
