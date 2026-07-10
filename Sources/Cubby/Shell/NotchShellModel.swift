@@ -13,6 +13,13 @@ enum HubTab: Int, CaseIterable, Identifiable {
         case .match: return "Scores"
         }
     }
+    var titleFR: String {
+        switch self {
+        case .bac: return "Fichiers"
+        case .music: return "Musique"
+        case .match: return "Scores"
+        }
+    }
     var icon: String {
         switch self {
         case .bac: return "tray.full.fill"

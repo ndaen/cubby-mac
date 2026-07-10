@@ -23,6 +23,7 @@ final class FileShelf: ObservableObject {
 
 struct BacTabView: View {
     @StateObject private var shelf = FileShelf.shared
+    @ObservedObject private var loc = Loc.shared
     @State private var targeted = false
 
     var body: some View {
@@ -56,8 +57,10 @@ struct BacTabView: View {
             .overlay {
                 VStack(spacing: 6) {
                     Image(systemName: "tray.and.arrow.down").font(.title)
-                    Text(targeted ? "Drop here" : "Drag files here").font(.subheadline)
-                    Text("they stay within reach — drag them out anywhere you like").font(.caption2).foregroundStyle(.tertiary)
+                    Text(targeted ? loc.s("Drop here", "Déposez ici")
+                                  : loc.s("Drag files here", "Glissez des fichiers ici")).font(.subheadline)
+                    Text(loc.s("they stay within reach — drag them out anywhere you like",
+                               "ils restent à portée — reglissez-les où vous voulez")).font(.caption2).foregroundStyle(.tertiary)
                 }
                 .foregroundStyle(.secondary)
             }
@@ -66,10 +69,11 @@ struct BacTabView: View {
     private var filledZone: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("\(shelf.items.count) file\(shelf.items.count > 1 ? "s" : "")")
+                Text(loc.s("\(shelf.items.count) file\(shelf.items.count > 1 ? "s" : "")",
+                           "\(shelf.items.count) fichier\(shelf.items.count > 1 ? "s" : "")"))
                     .font(.caption).foregroundStyle(.secondary)
                 Spacer()
-                Button("Clear") { shelf.clear() }.controlSize(.small).glassButton()
+                Button(loc.s("Clear", "Vider")) { shelf.clear() }.controlSize(.small).glassButton()
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {

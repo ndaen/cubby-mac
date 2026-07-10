@@ -125,6 +125,7 @@ struct MusicTabView: View {
     // Modèle partagé, démarré au lancement par Services — il vit en continu
     // pour alimenter aussi l'épingle latérale quand l'encoche est fermée.
     @ObservedObject var music: MusicModel
+    @ObservedObject private var loc = Loc.shared
 
     var body: some View {
         Group {
@@ -149,7 +150,7 @@ struct MusicTabView: View {
                             .frame(width: 16, height: 16)
                     }
                     .glassButton()
-                    .help("Open Apple Music")
+                    .help(loc.s("Open Apple Music", "Ouvrir Apple Music"))
                 }
                 scrubber
                 HStack(spacing: 8) {
@@ -184,7 +185,7 @@ struct MusicTabView: View {
                 .padding(4)
         }
         .onTapGesture { music.openMusic() }
-        .help("Open Apple Music")
+        .help(loc.s("Open Apple Music", "Ouvrir Apple Music"))
     }
 
     private var scrubber: some View {
@@ -212,8 +213,8 @@ struct MusicTabView: View {
     private var notRunning: some View {
         VStack(spacing: 8) {
             Image(systemName: "music.note").font(.title).foregroundStyle(.secondary)
-            Text("Apple Music isn’t open").foregroundStyle(.secondary)
-            Button("Open Music") { music.openMusic() }.controlSize(.small).glassButton()
+            Text(loc.s("Apple Music isn’t open", "Apple Music n’est pas ouvert")).foregroundStyle(.secondary)
+            Button(loc.s("Open Music", "Ouvrir Music")) { music.openMusic() }.controlSize(.small).glassButton()
         }
     }
 

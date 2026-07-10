@@ -5,6 +5,7 @@ struct NotchRootView: View {
     @ObservedObject var shell: NotchShellModel
     @ObservedObject var music: MusicModel
     @ObservedObject var match: MatchModel
+    @ObservedObject private var loc = Loc.shared
     @AppStorage("cubby.showScores") private var showScores = false
     @State private var dropTargeting = false
 
@@ -132,7 +133,7 @@ struct NotchRootView: View {
                     Button { shell.tab = t } label: {
                         HStack(spacing: 5) {
                             Image(systemName: t.icon)
-                            Text(t.title)
+                            Text(loc.s(t.title, t.titleFR))
                         }
                         .font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 12).padding(.vertical, 6)
@@ -152,7 +153,8 @@ struct NotchRootView: View {
                         .foregroundStyle(shell.pinnedTab == shell.tab ? .primary : .secondary)
                 }
                 .buttonStyle(.plain)
-                .help("Pin this tab to the sides of the notch")
+                .help(loc.s("Pin this tab to the sides of the notch",
+                            "Épingler cet onglet sur les flancs de l'encoche"))
                 // tout désépingler : repasse en priorité auto (visible seulement si épinglé)
                 if shell.pinnedTab != nil {
                     Button { shell.pinnedTab = nil } label: {
@@ -163,9 +165,19 @@ struct NotchRootView: View {
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
-                    .help("Unpin all")
+                    .help(loc.s("Unpin all", "Tout désépingler"))
                     .transition(.opacity)
                 }
+                // roue crantée : ferme l'encoche puis ouvre la fenêtre de réglages
+                Button { shell.close(); SettingsWindow.shared.show() } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .padding(7)
+                        .glassBG(Circle(), active: false)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help(loc.s("Settings", "Réglages"))
             }
             .animation(.easeOut(duration: 0.18), value: shell.pinnedTab)
 

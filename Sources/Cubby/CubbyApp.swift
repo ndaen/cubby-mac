@@ -8,12 +8,13 @@ struct CubbyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
     @AppStorage("cubby.showScores") private var showScores = false
+    @ObservedObject private var loc = Loc.shared
 
     var body: some Scene {
         MenuBarExtra("Cubby", systemImage: "eyes") {
-            Toggle("Show Scores tab", isOn: $showScores)
+            Toggle(loc.s("Show Scores tab", "Afficher l'onglet Scores"), isOn: $showScores)
             Divider()
-            Button("Quit") { NSApplication.shared.terminate(nil) }
+            Button(loc.s("Quit", "Quitter")) { NSApplication.shared.terminate(nil) }
         }
     }
 }
