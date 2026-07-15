@@ -1,4 +1,8 @@
-# Cubby
+<p align="center">
+  <img src="Logo/icon-1024.png" width="160" alt="Cubby">
+</p>
+
+<h1 align="center">Cubby</h1>
 
 > A little creature that lives in your Mac's notch. Drop files on it, control your music, and glance at what matters — right from the black bar at the top of your screen.
 
