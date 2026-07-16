@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -18,6 +20,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Use newest installed Xcode (Swift 6 toolchain)
         run: |
@@ -30,8 +34,20 @@ jobs:
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
             V="${{ github.event.inputs.version }}"
-          else
+          elif [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             V="${GITHUB_REF_NAME#v}"
+          else
+            # push sur main : bump automatique du patch depuis le dernier tag
+            LAST="$(git tag -l 'v*' --sort=-v:refname | head -1)"
+            LAST="${LAST#v}"
+            LAST="${LAST:-0.0.0}"
+            MAJOR="${LAST%%.*}"
+            REST="${LAST#*.}"
+            MINOR="${REST%%.*}"
+            PATCH="${REST#*.}"
+            V="$MAJOR.$MINOR.$((PATCH + 1))"
+            git tag "v$V"
+            git push origin "v$V"
           fi
           echo "version=$V" >> "$GITHUB_OUTPUT"
 
