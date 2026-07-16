@@ -1,15 +1,17 @@
 // Adapté de NotchDrop (MIT).
 import AppKit
+import Combine
 import SwiftUI
 
 @MainActor
 final class NotchWindowController: NSWindowController {
     let shell: NotchShellModel
     private let stripHeight: CGFloat = 300
+    private var cancellables: Set<AnyCancellable> = []
 
     init(screen: NSScreen, music: MusicModel, match: MatchModel) {
         var notch = screen.notchSize
-        let inset: CGFloat = (notch == .zero) ? 0 : -4
+        let inset: CGFloat = (notch == .zero) ? 0 : 4
         let shellModel = NotchShellModel(inset: inset)
         shell = shellModel
         shellModel.resolveOpenTab = { [weak shellModel] in
@@ -46,6 +48,17 @@ final class NotchWindowController: NSWindowController {
         shell.screenRect = screen.frame
 
         win.orderFrontRegardless()
+
+        // Le clic "ouvre" est détecté par un moniteur global (NotchShellModel),
+        // donc la fenêtre n'a besoin de capter les clics AppKit que pendant
+        // qu'elle est visible — sinon elle vole le focus sur toute la bande.
+        win.ignoresMouseEvents = true
+        shell.$status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak win] status in
+                win?.ignoresMouseEvents = (status == .closed)
+            }
+            .store(in: &cancellables)
     }
 
     @available(*, unavailable)
