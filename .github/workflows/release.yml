@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    # le site, la doc et les specs ne sont pas du code : pas de release pour eux
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'specs/**'
     tags:
       - 'v*'
   workflow_dispatch:
