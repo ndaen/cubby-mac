@@ -68,7 +68,17 @@ struct NotchRootView: View {
         .onChange(of: dropTargeting) { _, targeted in
             if targeted { shell.tab = .bac; shell.open() }
         }
+        .onChange(of: pinActive) { _, _ in updatePinnedContentRect() }
+        .onChange(of: earW) { _, _ in updatePinnedContentRect() }
+        .onAppear { updatePinnedContentRect() }
         .preferredColorScheme(.dark)
+    }
+
+    // zone (coords écran) que la fenêtre doit accepter en survol quand l'encoche est fermée
+    private func updatePinnedContentRect() {
+        shell.pinnedContentRect = pinActive
+            ? shell.deviceNotchRect.insetBy(dx: -earW, dy: 0)
+            : .zero
     }
 
     private func deposit(_ providers: [NSItemProvider]) {

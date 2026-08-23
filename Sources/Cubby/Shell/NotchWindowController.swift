@@ -53,10 +53,10 @@ final class NotchWindowController: NSWindowController {
         // donc la fenêtre n'a besoin de capter les clics AppKit que pendant
         // qu'elle est visible — sinon elle vole le focus sur toute la bande.
         win.ignoresMouseEvents = true
-        shell.$status
+        shell.$wantsMouseEvents
             .receive(on: DispatchQueue.main)
-            .sink { [weak win] status in
-                win?.ignoresMouseEvents = (status == .closed)
+            .sink { [weak win] wants in
+                win?.ignoresMouseEvents = !wants
             }
             .store(in: &cancellables)
     }

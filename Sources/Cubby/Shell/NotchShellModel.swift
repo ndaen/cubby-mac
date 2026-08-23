@@ -57,6 +57,10 @@ final class NotchShellModel: ObservableObject {
 
     @Published var deviceNotchRect: CGRect = .zero
     @Published var screenRect: CGRect = .zero
+    // zone élargie (encoche + épingles latérales) quand un contenu est affiché à l'état fermé
+    // (ex : play/pause musique) — permet à la fenêtre d'accepter les clics dessus.
+    @Published var pinnedContentRect: CGRect = .zero
+    @Published private(set) var wantsMouseEvents = false
 
     let inset: CGFloat
     let openedSize = CGSize(width: 540, height: 200)
@@ -98,6 +102,17 @@ final class NotchShellModel: ObservableObject {
         deviceNotchRect.insetBy(dx: inset, dy: inset).contains(p)
     }
 
+    // la fenêtre doit accepter les vrais clics AppKit dès que la souris survole
+    // l'encoche ouverte/en pop, ou la zone épingles quand quelque chose y est affiché.
+    private func updateWantsMouseEvents(_ p: NSPoint) {
+        switch status {
+        case .opened, .popping:
+            wantsMouseEvents = true
+        case .closed:
+            wantsMouseEvents = pinnedContentRect != .zero && pinnedContentRect.contains(p)
+        }
+    }
+
     private func setup() {
         let events = EventMonitors.shared
 
@@ -133,6 +148,7 @@ final class NotchShellModel: ObservableObject {
                         scheduleIdleClose()
                     }
                 }
+                updateWantsMouseEvents(m)
             }
             .store(in: &cancellables)
 
@@ -143,6 +159,11 @@ final class NotchShellModel: ObservableObject {
                 guard let self else { return }
                 if status != .opened, hit(NSEvent.mouseLocation) { open() }
             }
+            .store(in: &cancellables)
+
+        $status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateWantsMouseEvents(NSEvent.mouseLocation) }
             .store(in: &cancellables)
 
         $status
