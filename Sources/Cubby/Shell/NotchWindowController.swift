@@ -9,14 +9,14 @@ final class NotchWindowController: NSWindowController {
     private let stripHeight: CGFloat = 300
     private var cancellables: Set<AnyCancellable> = []
 
-    init(screen: NSScreen, music: MusicModel, match: MatchModel) {
+    init(screen: NSScreen, music: MusicModel) {
         var notch = screen.notchSize
         let inset: CGFloat = (notch == .zero) ? 0 : 4
         let shellModel = NotchShellModel(inset: inset)
         shell = shellModel
         shellModel.resolveOpenTab = { [weak shellModel] in
             guard let shellModel else { return nil }
-            return resolvePinTab(shell: shellModel, music: music, match: match)
+            return resolvePinTab(shell: shellModel, music: music)
         }
 
         let win = NotchWindow(
@@ -27,7 +27,7 @@ final class NotchWindowController: NSWindowController {
         )
         super.init(window: win)
 
-        let root = NotchRootView(shell: shell, music: music, match: match)
+        let root = NotchRootView(shell: shell, music: music)
         let host = NSHostingView(rootView: root)
         win.contentView = host
 

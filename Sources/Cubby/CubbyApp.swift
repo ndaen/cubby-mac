@@ -7,13 +7,10 @@ func log(_ s: String) { FileHandle.standardError.write(Data("[cubby] \(s)\n".utf
 struct CubbyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
-    @AppStorage("cubby.showScores") private var showScores = false
     @ObservedObject private var loc = Loc.shared
 
     var body: some Scene {
         MenuBarExtra("Cubby", systemImage: "eyes") {
-            Toggle(loc.s("Show Scores tab", "Afficher l'onglet Scores"), isOn: $showScores)
-            Divider()
             Button(loc.s("Quit", "Quitter")) { NSApplication.shared.terminate(nil) }
         }
     }
@@ -40,12 +37,10 @@ final class Services {
     static let shared = Services()
 
     let music = MusicModel()
-    let match = MatchModel()
     private var windowController: NotchWindowController?
 
     func start() {
         music.start()   // poll continu → alimente l'onglet ET l'épingle latérale
-        match.start()   // scores en continu → onglet + épingle
         log("services démarrés")
     }
 
@@ -53,6 +48,6 @@ final class Services {
         windowController?.destroy()
         let screen = NSScreen.builtin ?? NSScreen.main
         guard let screen else { return }
-        windowController = NotchWindowController(screen: screen, music: music, match: match)
+        windowController = NotchWindowController(screen: screen, music: music)
     }
 }

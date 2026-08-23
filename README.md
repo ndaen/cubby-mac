@@ -14,8 +14,7 @@ Cubby turns the notch (or a small strip at the top of any Mac) into a **shelf**:
 
 - **Files** — drag any file onto the notch and it lands on a shelf; drag it back out wherever you need it.
 - **Music** — control Apple Music from the notch: play/pause, skip, scrub, artwork.
-- **Scores** — a glanceable live-scores tab (currently wired to the 2026 World Cup).
-- **Side pins** — when closed, the notch shows Dynamic Island-style widgets: now playing, or a live score. Pin a tab manually, or let Cubby auto-pick.
+- **Side pins** — when closed, the notch shows a Dynamic Island-style now-playing widget. Pin the tab manually, or let Cubby auto-pick.
 
 ## Requirements
 
@@ -65,7 +64,6 @@ Cubby is **SwiftUI + AppKit**, built with **Swift Package Manager**, with **zero
 ## Roadmap
 
 - **Extensions & a marketplace** — turn each tab into an installable extension so anyone can add their own (including a better, richer agent monitor).
-- **Pluggable scores** — other competitions and sports; make the tab optional.
 - **Spotify** alongside Apple Music.
 - **English UI** (the interface is currently in French) and notarized, auto-updating builds.
 

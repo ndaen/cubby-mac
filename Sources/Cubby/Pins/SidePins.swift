@@ -3,19 +3,15 @@ import AppKit
 
 // Résout l'onglet dont l'épingle s'affiche sur les flancs de l'encoche fermée.
 //   1. onglet épinglé manuellement (shell.pinnedTab) s'il a un contenu latéral ;
-//   2. sinon priorité auto : Match → Musique.
+//   2. sinon priorité auto : Musique.
 @MainActor
-func resolvePinTab(shell: NotchShellModel, music: MusicModel, match: MatchModel) -> HubTab? {
-    let showScores = UserDefaults.standard.bool(forKey: "cubby.showScores")
+func resolvePinTab(shell: NotchShellModel, music: MusicModel) -> HubTab? {
     if let p = shell.pinnedTab {
         switch p {
-        case .match: return (showScores && match.featured != nil) ? .match : nil
         case .music: return music.available ? .music : nil
         case .bac: return nil
         }
     }
-    // priorité auto : un match EN DIRECT prime, sinon la musique
-    if showScores, match.liveGame != nil { return .match }
     if music.available { return .music }
     return nil
 }
@@ -25,7 +21,6 @@ func resolvePinTab(shell: NotchShellModel, music: MusicModel, match: MatchModel)
 struct SidePins: View {
     @ObservedObject var shell: NotchShellModel
     @ObservedObject var music: MusicModel
-    @ObservedObject var match: MatchModel
     let pinTab: HubTab?
     let notchWidth: CGFloat   // largeur intérieure de l'encoche
     let earW: CGFloat         // largeur d'une marge latérale
@@ -52,7 +47,6 @@ struct SidePins: View {
     @ViewBuilder private var leadingContent: some View {
         switch pinTab {
         case .music: musicArtwork
-        case .match: matchSide(home: true)
         default: Color.clear.frame(width: earW, height: notchHeight)
         }
     }
@@ -60,27 +54,7 @@ struct SidePins: View {
     @ViewBuilder private var trailingContent: some View {
         switch pinTab {
         case .music: musicPlayPause
-        case .match: matchSide(home: false)
         default: Color.clear.frame(width: earW, height: notchHeight)
-        }
-    }
-
-    // MARK: - Match : drapeau + score d'une équipe sur un flanc
-
-    @ViewBuilder private func matchSide(home: Bool) -> some View {
-        if let g = match.featured {
-            let id = g.teamId(home: home)
-            HStack(spacing: 4) {
-                Text(match.flagEmoji(forTeamId: id)).font(.system(size: 15))
-                if g.hasScore {
-                    Text("\(home ? g.homeGoals : g.awayGoals)")
-                        .font(.system(size: 14, weight: .bold).monospacedDigit())
-                        .foregroundStyle(g.isLive ? .red : .white)
-                }
-            }
-            .frame(width: earW, height: notchHeight)
-        } else {
-            Color.clear.frame(width: earW, height: notchHeight)
         }
     }
 

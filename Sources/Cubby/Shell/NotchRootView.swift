@@ -4,15 +4,8 @@ import UniformTypeIdentifiers
 struct NotchRootView: View {
     @ObservedObject var shell: NotchShellModel
     @ObservedObject var music: MusicModel
-    @ObservedObject var match: MatchModel
     @ObservedObject private var loc = Loc.shared
-    @AppStorage("cubby.showScores") private var showScores = false
     @State private var dropTargeting = false
-
-    // onglets visibles dans la barre (Scores optionnel, off par défaut)
-    private var visibleTabs: [HubTab] {
-        showScores ? HubTab.allCases : HubTab.allCases.filter { $0 != .match }
-    }
 
     private var notchSize: CGSize {
         switch shell.status {
@@ -33,14 +26,9 @@ struct NotchRootView: View {
     }
 
     // largeur d'une marge latérale (oreille) accueillant une épingle
-    private var earW: CGFloat {
-        switch pinTab {
-        case .match: return 54                                      // drapeau + score
-        default: return min(max(shell.deviceNotchRect.height, 28), 40)
-        }
-    }
+    private var earW: CGFloat { min(max(shell.deviceNotchRect.height, 28), 40) }
     // onglet épinglé/résolu à afficher sur les flancs (nil = rien)
-    private var pinTab: HubTab? { resolvePinTab(shell: shell, music: music, match: match) }
+    private var pinTab: HubTab? { resolvePinTab(shell: shell, music: music) }
     private var pinActive: Bool { pinTab != nil && shell.status != .opened }
     // extension noire de chaque côté quand une épingle est active
     private var sideExtra: CGFloat { pinActive ? earW : 0 }
@@ -61,14 +49,11 @@ struct NotchRootView: View {
                     .transition(.opacity)
             } else {
                 // contenu des épingles posé dans les marges noires latérales
-                SidePins(shell: shell, music: music, match: match, pinTab: pinTab,
+                SidePins(shell: shell, music: music, pinTab: pinTab,
                          notchWidth: notchSize.width, earW: earW,
                          notchHeight: shell.deviceNotchRect.height)
                     .animation(shell.animation, value: pinActive)
 
-                statusPill
-                    .offset(y: shell.deviceNotchRect.height + (shell.status == .popping ? 8 : 2))
-                    .opacity(shell.status == .popping ? 1 : 0.92)
                 // zone de dépôt sur l'encoche fermée : ouvre + dépose dans le Bac
                 Color.white.opacity(0.001)
                     .frame(width: notchSize.width + 90, height: notchSize.height + 36)
@@ -82,12 +67,6 @@ struct NotchRootView: View {
         .animation(shell.animation, value: shell.status)
         .onChange(of: dropTargeting) { _, targeted in
             if targeted { shell.tab = .bac; shell.open() }
-        }
-        .onChange(of: showScores) { _, on in
-            if !on {
-                if shell.tab == .match { shell.tab = .bac }
-                if shell.pinnedTab == .match { shell.pinnedTab = nil }
-            }
         }
         .preferredColorScheme(.dark)
     }
@@ -105,31 +84,11 @@ struct NotchRootView: View {
         }
     }
 
-    // Pastille visible quand le hub est fermé/au survol : minute d'un match en direct.
-    @ViewBuilder private var statusPill: some View {
-        if pinTab == .match, let g = match.featured, g.isLive {
-            pillBody {
-                HStack(spacing: 6) {
-                    Circle().fill(.red).frame(width: 6, height: 6)
-                    Text(g.minuteText ?? "LIVE")
-                        .font(.caption.weight(.bold).monospacedDigit()).foregroundStyle(.red)
-                }
-            }
-        }
-    }
-
-    private func pillBody<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        content()
-            .padding(.horizontal, 10).padding(.vertical, 4)
-            .background(.black, in: Capsule())
-            .overlay(Capsule().strokeBorder(.white.opacity(0.08)))
-    }
-
     // Panneau ouvert : barre d'onglets + contenu
     private var panel: some View {
         VStack(spacing: 10) {
             HStack(spacing: 6) {
-                ForEach(visibleTabs) { t in
+                ForEach(HubTab.allCases) { t in
                     Button { shell.tab = t } label: {
                         HStack(spacing: 5) {
                             Image(systemName: t.icon)
@@ -185,7 +144,6 @@ struct NotchRootView: View {
                 switch shell.tab {
                 case .bac: BacTabView()
                 case .music: MusicTabView(music: music)
-                case .match: MatchTabView(match: match)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

@@ -38,9 +38,7 @@ final class MarketModel: ObservableObject {
     // d'autres id (available:false = "Bientôt"), mais il ne peut jamais activer une feature
     // que la version installée n'implémente pas. Livrer une extension = une ligne ici + son
     // case HubTab + sa vue. Aucune autre modif de MarketModel.
-    private let wiredFlags: [String: String] = [
-        "scores": "cubby.showScores",
-    ]
+    private let wiredFlags: [String: String] = [:]
 
     func canInstall(_ ext: Extension) -> Bool { ext.available && wiredFlags[ext.id] != nil }
     func isInstalled(_ ext: Extension) -> Bool {
@@ -55,9 +53,6 @@ final class MarketModel: ObservableObject {
 
     // ponytail: repli aligné sur le catalog.json distant à publier.
     static let bundled: [Extension] = [
-        Extension(id: "scores", emoji: "⚽️", nameEn: "Scores", nameFr: "Scores",
-                  descEn: "Live football scores in the notch",
-                  descFr: "Scores de foot en direct dans l'encoche", available: true),
         Extension(id: "weather", emoji: "🌦", nameEn: "Weather", nameFr: "Météo",
                   descEn: "Current weather at a glance",
                   descFr: "La météo en un coup d'œil", available: false),
