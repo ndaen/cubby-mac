@@ -256,6 +256,7 @@ struct Scrubber: View {
                     .glassBG(Capsule(), active: dragging)
                     .frame(width: knobW, height: knobH)
                     .shadow(color: .black.opacity(0.3), radius: dragging ? 3 : 1, y: 0.5)
+                    .shadow(color: .cubby.opacity(dragging ? 0.8 : 0.45), radius: dragging ? 7 : 4)
                     .scaleEffect(dragging ? 1.2 : 1)
                     .offset(x: min(max(x - knobW / 2, 0), w - knobW))
                     .animation(.easeOut(duration: 0.12), value: dragging)

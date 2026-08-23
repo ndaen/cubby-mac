@@ -15,6 +15,7 @@ struct SettingsRoot: View {
                 .tabItem { Label(loc.s("Develop", "Développer"), systemImage: "hammer.fill") }
         }
         .frame(width: 500, height: 580)
+        .tint(.cubby)
     }
 }
 

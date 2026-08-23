@@ -37,7 +37,7 @@ struct BacTabView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(targeted ? Color.blue.opacity(0.12) : Color.clear)
+                .fill(targeted ? Color.cubby.opacity(0.12) : Color.clear)
         )
         .onDrop(of: [.fileURL], isTargeted: $targeted) { providers in
             for p in providers where p.canLoadObject(ofClass: URL.self) {
@@ -53,10 +53,11 @@ struct BacTabView: View {
     private var emptyZone: some View {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
             .strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [6]))
-            .foregroundStyle(targeted ? Color.blue : Color.secondary)
+            .foregroundStyle(targeted ? Color.cubby : Color.secondary)
             .overlay {
                 VStack(spacing: 6) {
                     Image(systemName: "tray.and.arrow.down").font(.title)
+                        .foregroundStyle(targeted ? AnyShapeStyle(Color.cubby) : AnyShapeStyle(.secondary))
                     Text(targeted ? loc.s("Drop here", "Déposez ici")
                                   : loc.s("Drag files here", "Glissez des fichiers ici")).font(.subheadline)
                     Text(loc.s("they stay within reach — drag them out anywhere you like",
@@ -101,7 +102,7 @@ struct FileChip: View {
                 .frame(width: 72)
         }
         .padding(8)
-        .glassBG(RoundedRectangle(cornerRadius: 10))
+        .glassBG(RoundedRectangle(cornerRadius: 10), interactive: true)
         .overlay(alignment: .topTrailing) {
             Button(action: onRemove) {
                 Image(systemName: "xmark").font(.system(size: 8, weight: .bold))

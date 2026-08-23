@@ -96,7 +96,7 @@ struct NotchRootView: View {
                         }
                         .font(.system(size: 12, weight: .semibold))
                         .padding(.horizontal, 12).padding(.vertical, 6)
-                        .glassBG(Capsule(), active: shell.tab == t)
+                        .glassBG(Capsule(), active: shell.tab == t, tint: .cubby.opacity(0.28), interactive: true)
                         .foregroundStyle(shell.tab == t ? .primary : .secondary)
                     }
                     .buttonStyle(.plain)
@@ -108,7 +108,7 @@ struct NotchRootView: View {
                         .font(.system(size: 12, weight: .semibold))
                         .rotationEffect(.degrees(45))
                         .padding(7)
-                        .glassBG(Circle(), active: shell.pinnedTab == shell.tab)
+                        .glassBG(Circle(), active: shell.pinnedTab == shell.tab, tint: .cubby.opacity(0.28), interactive: true)
                         .foregroundStyle(shell.pinnedTab == shell.tab ? .primary : .secondary)
                 }
                 .buttonStyle(.plain)
@@ -120,7 +120,7 @@ struct NotchRootView: View {
                         Image(systemName: "pin.slash")
                             .font(.system(size: 12, weight: .semibold))
                             .padding(7)
-                            .glassBG(Circle())
+                            .glassBG(Circle(), interactive: true)
                             .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
