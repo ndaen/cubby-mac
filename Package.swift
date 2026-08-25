@@ -7,6 +7,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Cubby"
-        )
+        ),
+        .testTarget(
+            name: "CubbyTests",
+            dependencies: ["Cubby"]
+        ),
     ]
 )
