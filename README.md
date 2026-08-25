@@ -14,7 +14,8 @@ Cubby turns the notch (or a small strip at the top of any Mac) into a **shelf**:
 
 - **Files** — drag any file onto the notch and it lands on a shelf; drag it back out wherever you need it.
 - **Music** — control Apple Music from the notch: play/pause, skip, scrub, artwork.
-- **Side pins** — when closed, the notch shows a Dynamic Island-style now-playing widget. Pin the tab manually, or let Cubby auto-pick.
+- **Pomodoro** — a focus timer with adjustable durations. When a phase ends, the notch opens by itself on the countdown; the next one starts when you say so. Install it from the Marketplace in Settings.
+- **Side pins** — when closed, the notch shows a Dynamic Island-style widget: now playing, or a running countdown. Pin a tab manually, or let Cubby auto-pick.
 
 ## Requirements
 
@@ -57,15 +58,16 @@ The first time you use the **Music** tab, macOS asks you to let Cubby control Ap
 ```sh
 swift build                # debug build
 swift run                  # build & run from the terminal
+swift test                 # run the test suite
 ```
 
 Cubby is **SwiftUI + AppKit**, built with **Swift Package Manager**, with **zero third-party runtime dependencies**. The notch window, shape, and shell state machine are adapted from [NotchDrop](https://github.com/Lakr233/NotchDrop) (MIT).
 
 ## Roadmap
 
-- **Extensions & a marketplace** — turn each tab into an installable extension so anyone can add their own (including a better, richer agent monitor).
+- **More extensions** — Pomodoro is the first one shipped through the Marketplace; Weather and Agenda are next.
 - **Spotify** alongside Apple Music.
-- **English UI** (the interface is currently in French) and notarized, auto-updating builds.
+- Notarized, auto-updating builds — Cubby is currently ad-hoc signed, so the first launch needs a trip through System Settings.
 
 ## Contributing
 
