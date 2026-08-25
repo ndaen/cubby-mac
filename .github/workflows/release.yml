@@ -34,6 +34,9 @@ jobs:
           [ -n "$XC" ] && sudo xcode-select -s "$XC"
           swift --version
 
+      - name: Test
+        run: swift test
+
       - name: Resolve version
         id: v
         run: |
