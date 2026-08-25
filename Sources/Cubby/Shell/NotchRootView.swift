@@ -4,8 +4,15 @@ import UniformTypeIdentifiers
 struct NotchRootView: View {
     @ObservedObject var shell: NotchShellModel
     @ObservedObject var music: MusicModel
+    @ObservedObject var pomo: PomodoroModel
     @ObservedObject private var loc = Loc.shared
+    @AppStorage(PomodoroSettings.Keys.installed) private var showPomodoro = false
     @State private var dropTargeting = false
+
+    // onglets visibles dans la barre — une extension non installée reste masquée
+    private var visibleTabs: [HubTab] {
+        showPomodoro ? HubTab.allCases : HubTab.allCases.filter { $0 != .pomodoro }
+    }
 
     private var notchSize: CGSize {
         switch shell.status {
@@ -26,9 +33,14 @@ struct NotchRootView: View {
     }
 
     // largeur d'une marge latérale (oreille) accueillant une épingle
-    private var earW: CGFloat { min(max(shell.deviceNotchRect.height, 28), 40) }
+    private var earW: CGFloat {
+        switch pinTab {
+        case .pomodoro: return 54                                    // anneau + mm:ss
+        default: return min(max(shell.deviceNotchRect.height, 28), 40)
+        }
+    }
     // onglet épinglé/résolu à afficher sur les flancs (nil = rien)
-    private var pinTab: HubTab? { resolvePinTab(shell: shell, music: music) }
+    private var pinTab: HubTab? { resolvePinTab(shell: shell, music: music, pomo: pomo) }
     private var pinActive: Bool { pinTab != nil && shell.status != .opened }
     // extension noire de chaque côté quand une épingle est active
     private var sideExtra: CGFloat { pinActive ? earW : 0 }
@@ -49,7 +61,7 @@ struct NotchRootView: View {
                     .transition(.opacity)
             } else {
                 // contenu des épingles posé dans les marges noires latérales
-                SidePins(shell: shell, music: music, pinTab: pinTab,
+                SidePins(shell: shell, music: music, pomo: pomo, pinTab: pinTab,
                          notchWidth: notchSize.width, earW: earW,
                          notchHeight: shell.deviceNotchRect.height)
                     .animation(shell.animation, value: pinActive)
@@ -67,6 +79,12 @@ struct NotchRootView: View {
         .animation(shell.animation, value: shell.status)
         .onChange(of: dropTargeting) { _, targeted in
             if targeted { shell.tab = .bac; shell.open() }
+        }
+        .onChange(of: showPomodoro) { _, on in
+            if !on {
+                if shell.tab == .pomodoro { shell.tab = .bac }
+                if shell.pinnedTab == .pomodoro { shell.pinnedTab = nil }
+            }
         }
         .onChange(of: pinActive) { _, _ in updatePinnedContentRect() }
         .onChange(of: earW) { _, _ in updatePinnedContentRect() }
@@ -98,7 +116,7 @@ struct NotchRootView: View {
     private var panel: some View {
         VStack(spacing: 10) {
             HStack(spacing: 6) {
-                ForEach(HubTab.allCases) { t in
+                ForEach(visibleTabs) { t in
                     Button { shell.tab = t } label: {
                         HStack(spacing: 5) {
                             Image(systemName: t.icon)
@@ -154,6 +172,7 @@ struct NotchRootView: View {
                 switch shell.tab {
                 case .bac: BacTabView()
                 case .music: MusicTabView(music: music)
+                case .pomodoro: PomodoroTabView(pomo: pomo)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

@@ -48,6 +48,6 @@ final class Services {
         windowController?.destroy()
         let screen = NSScreen.builtin ?? NSScreen.main
         guard let screen else { return }
-        windowController = NotchWindowController(screen: screen, music: music)
+        windowController = NotchWindowController(screen: screen, music: music, pomo: .shared)
     }
 }

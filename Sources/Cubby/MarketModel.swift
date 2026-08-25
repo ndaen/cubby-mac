@@ -38,7 +38,9 @@ final class MarketModel: ObservableObject {
     // d'autres id (available:false = "Bientôt"), mais il ne peut jamais activer une feature
     // que la version installée n'implémente pas. Livrer une extension = une ligne ici + son
     // case HubTab + sa vue. Aucune autre modif de MarketModel.
-    private let wiredFlags: [String: String] = [:]
+    private let wiredFlags: [String: String] = [
+        "pomodoro": PomodoroSettings.Keys.installed,
+    ]
 
     func canInstall(_ ext: Extension) -> Bool { ext.available && wiredFlags[ext.id] != nil }
     func isInstalled(_ ext: Extension) -> Bool {

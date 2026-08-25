@@ -9,14 +9,14 @@ final class NotchWindowController: NSWindowController {
     private let stripHeight: CGFloat = 300
     private var cancellables: Set<AnyCancellable> = []
 
-    init(screen: NSScreen, music: MusicModel) {
+    init(screen: NSScreen, music: MusicModel, pomo: PomodoroModel) {
         var notch = screen.notchSize
         let inset: CGFloat = (notch == .zero) ? 0 : 4
         let shellModel = NotchShellModel(inset: inset)
         shell = shellModel
         shellModel.resolveOpenTab = { [weak shellModel] in
             guard let shellModel else { return nil }
-            return resolvePinTab(shell: shellModel, music: music)
+            return resolvePinTab(shell: shellModel, music: music, pomo: pomo)
         }
 
         let win = NotchWindow(
@@ -27,7 +27,14 @@ final class NotchWindowController: NSWindowController {
         )
         super.init(window: win)
 
-        let root = NotchRootView(shell: shell, music: music)
+        let root = NotchRootView(shell: shell, music: music, pomo: pomo)
+        // fin d'une phase : l'encoche s'ouvre d'elle-même sur le compte à rebours.
+        // C'est le shell qui s'abonne au modèle, jamais l'inverse.
+        pomo.onPhaseEnded = { [weak shellModel] in
+            shellModel?.tab = .pomodoro
+            shellModel?.open()
+        }
+
         let host = NSHostingView(rootView: root)
         win.contentView = host
 

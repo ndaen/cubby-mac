@@ -4,24 +4,27 @@ import Combine
 import SwiftUI
 
 enum HubTab: Int, CaseIterable, Identifiable {
-    case bac, music
+    case bac, music, pomodoro
     var id: Int { rawValue }
     var title: String {
         switch self {
         case .bac: return "Files"
         case .music: return "Music"
+        case .pomodoro: return "Pomodoro"
         }
     }
     var titleFR: String {
         switch self {
         case .bac: return "Fichiers"
         case .music: return "Musique"
+        case .pomodoro: return "Pomodoro"
         }
     }
     var icon: String {
         switch self {
         case .bac: return "tray.full.fill"
         case .music: return "music.note"
+        case .pomodoro: return "timer"
         }
     }
 }

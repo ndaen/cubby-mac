@@ -22,6 +22,7 @@ struct SettingsRoot: View {
 // ── Général : langue ──────────────────────────────────────────────
 private struct GeneralSettings: View {
     @ObservedObject private var loc = Loc.shared
+    @AppStorage(PomodoroSettings.Keys.installed) private var showPomodoro = false
 
     var body: some View {
         Form {
@@ -32,8 +33,45 @@ private struct GeneralSettings: View {
                 } label: { Text(loc.s("Interface language", "Langue de l'interface")) }
                 .pickerStyle(.segmented)
             }
+            // n'apparaît qu'une fois l'extension installée depuis le Marché
+            if showPomodoro {
+                Section(loc.s("Pomodoro", "Pomodoro")) { PomodoroSettingsFields() }
+            }
         }
         .formStyle(.grouped)
+    }
+}
+
+private struct PomodoroSettingsFields: View {
+    @ObservedObject private var loc = Loc.shared
+    @AppStorage(PomodoroSettings.Keys.work) private var work = 25.0
+    @AppStorage(PomodoroSettings.Keys.shortBreak) private var shortBreak = 5.0
+    @AppStorage(PomodoroSettings.Keys.longBreak) private var longBreak = 15.0
+    @AppStorage(PomodoroSettings.Keys.sessions) private var sessions = 4
+
+    var body: some View {
+        Group {
+            minutes(loc.s("Focus", "Concentration"), $work, 1...90)
+            minutes(loc.s("Short break", "Pause courte"), $shortBreak, 1...30)
+            minutes(loc.s("Long break", "Pause longue"), $longBreak, 1...60)
+            Stepper(value: $sessions, in: 1...12) {
+                LabeledContent(loc.s("Sessions before a long break",
+                                     "Sessions avant une pause longue"), value: "\(sessions)")
+            }
+        }
+        // un réglage ne prend effet qu'entre deux phases : on ne coupe pas un compte à rebours en cours
+        .onChange(of: work) { _, _ in PomodoroModel.shared.settingsChanged() }
+        .onChange(of: shortBreak) { _, _ in PomodoroModel.shared.settingsChanged() }
+        .onChange(of: longBreak) { _, _ in PomodoroModel.shared.settingsChanged() }
+        .onChange(of: sessions) { _, _ in PomodoroModel.shared.settingsChanged() }
+    }
+
+    private func minutes(_ title: String, _ value: Binding<Double>,
+                         _ range: ClosedRange<Double>) -> some View {
+        Stepper(value: value, in: range, step: 1) {
+            LabeledContent(title, value: loc.s("\(Int(value.wrappedValue)) min",
+                                               "\(Int(value.wrappedValue)) min"))
+        }
     }
 }
 
